@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LeafLoom | Bestelpagina</title>
     <link rel="stylesheet" href="/styles/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kreon:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles/bestelpagina.css">
 </head>
 <body>
@@ -12,7 +15,7 @@
         <nav>
             <div class="nav-item">
                 <div class="icon-circle">
-                    <img src="/media/symbols/info.png" alt="Informatiepagina met details over producten" onclick="window.location.href = 'pages/details.html'">
+                    <img src="/media/symbols/info.png" alt="Informatiepagina met details over producten" onclick="window.location.href = '/pages/details.html'">
                 </div>
                 <span>Details</span>
             </div>
@@ -20,11 +23,10 @@
                 <div class="logo-icon-circle">
                     <img src="/media/symbols/logo.png" alt="Logo van LeafLoom" onclick="window.location.href = '/'">
                 </div>
-                <span>LeafLoom</span>
             </div>
             <div class="nav-item active">
                 <div class="icon-circle">
-                    <img src="/media/symbols/winkelmandje.png" alt="Bekijk items in het winkelmandje" onclick="window.location.href = 'pages/winkelmandje.html'">
+                    <img src="/media/symbols/winkelmandje.png" alt="Bekijk items in het winkelmandje" onclick="window.location.href = '/pages/winkelmandje.html'">
                 </div>
                 <span>Winkelmandje</span>
             </div>
@@ -122,18 +124,6 @@
         <p>&copy; 2025 LeafLoom - Jouw Planten Paradijs</p>
     </footer>
 
-    <script src="/code/bestel.js"></script>
-    <script>
-        const cartButtons = document.querySelectorAll('.cart-button');
-        cartButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                this.classList.add('added');
-                setTimeout(() => {
-                    this.classList.remove('added');
-                }, 1000);
-                console.log('Product added to cart');
-            });
-        });
-    </script>
+    <script src="/code/script.js"></script>
 </body>
 </html>

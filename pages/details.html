@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LeafLoom | Plant Details</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kreon:wght@300..700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="/styles/style.css">
 </head>
 <body class="details-page">
@@ -139,17 +143,6 @@
         <p>&copy; 2025 LeafLoom - Jouw Planten Paradijs</p>
     </footer>
 
-    <script>
-        const cartButtons = document.querySelectorAll('.cart-button');
-        cartButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                this.classList.add('added');
-                setTimeout(() => {
-                    this.classList.remove('added');
-                }, 1000);
-                console.log('Product added to cart');
-            });
-        });
-    </script>
+    <script src="/code/script.js"></script>
 </body>
 </html>

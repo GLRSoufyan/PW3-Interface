@@ -1,4 +1,7 @@
-/* bestelpagina.css */
+body {
+    font-family: Kreon, 'Arial', sans-serif;
+}
+
 .order-container {
     max-width: 800px;
     margin: 20px auto;
@@ -194,6 +197,25 @@
     background-color: #4a8c5a;
 }
 
+.place-order-button {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 4px 8px rgba(46, 125, 50, 0.3);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(46, 125, 50, 0.4);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 4px 8px rgba(46, 125, 50, 0.3);
+    }
+}
+
 @media (max-width: 600px) {
     .address-details {
         flex-direction: column;
@@ -207,5 +229,34 @@
     
     .place-order-button, .back-button {
         width: 100%;
+    }
+}
+
+.hamburger-menu {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    nav {
+        display: none;
+    }
+
+    .hamburger-menu {
+        display: flex;
+    }
+}
+
+.order-card {
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

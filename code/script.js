@@ -1,12 +1,27 @@
 document.addEventListener('DOMContentLoaded', function() {
-    loadCartItems();
-    
     setupCartButtons();
     
-    document.querySelector('.buy-button').addEventListener('click', function() {
-        window.location.href = 'bestelpagina.html';
-    });
-    setupCarousel();
+    updateCartCount();
+    
+    if (document.querySelector('.cart-container')) {
+        loadCartItems();
+        setupCarousel();
+        
+        const buyButton = document.querySelector('.buy-button');
+        if (buyButton) {
+            buyButton.addEventListener('click', function() {
+                window.location.href = 'bestelpagina.html';
+            });
+        }
+    } else if (document.getElementById('orderForm')) {
+        loadOrderItems();
+        
+        const orderForm = document.getElementById('orderForm');
+        orderForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            processOrder();
+        });
+    }
 });
 
 function getCartItems() {
@@ -20,17 +35,19 @@ function saveCartItems(items) {
 
 function loadCartItems() {
     const cartItems = getCartItems();
-    updateCartSummary(cartItems);
-}
-
-function updateCartSummary(cartItems) {
     const itemList = document.querySelector('.item-list');
+    
+    if (!itemList) return;
     
     itemList.innerHTML = '';
     
     if (cartItems.length === 0) {
         itemList.innerHTML = '<div class="order-summary">Je winkelmandje is leeg</div>';
-        document.querySelector('.cart-total').textContent = 'Eindprijs: €0.00';
+        
+        const cartTotal = document.querySelector('.cart-total');
+        if (cartTotal) {
+            cartTotal.textContent = 'Eindprijs: €0.00';
+        }
         return;
     }
     
@@ -79,14 +96,73 @@ function updateCartSummary(cartItems) {
     itemList.appendChild(separator4);
 }
 
+function loadOrderItems() {
+    const cartItems = getCartItems();
+    const selectedProductsContainer = document.getElementById('selectedProducts');
+    
+    if (!selectedProductsContainer) return;
+    
+    if (cartItems.length === 0) {
+        return;
+    }
+    
+    selectedProductsContainer.innerHTML = '';
+    
+    let subtotal = 0;
+    
+    cartItems.forEach(item => {
+        const productElement = document.createElement('div');
+        productElement.className = 'product-item';
+        
+        const price = parseFloat(item.price.replace('$', ''));
+        subtotal += price;
+        
+        productElement.innerHTML = `
+            <div class="product-info">
+                <img src="${item.image}" alt="${item.name}" class="product-image">
+                <span class="product-name">${item.name}</span>
+            </div>
+            <span class="product-price">€${price.toFixed(2)}</span>
+        `;
+        
+        selectedProductsContainer.appendChild(productElement);
+    });
+    
+    updateOrderSummary(subtotal);
+}
+
+function updateOrderSummary(subtotal) {
+    const subtotalElement = document.getElementById('subtotal');
+    const totalElement = document.getElementById('total');
+    
+    if (!subtotalElement || !totalElement) return;
+    
+    const shippingCost = 3.00;
+    
+    subtotalElement.textContent = `€${subtotal.toFixed(2)}`;
+    totalElement.textContent = `€${(subtotal + shippingCost).toFixed(2)}`;
+}
+
 function setupCartButtons() {
     const cartButtons = document.querySelectorAll('.cart-button');
+    
     cartButtons.forEach(button => {
         button.addEventListener('click', function() {
             const productCard = this.closest('.product-card');
-            const productName = productCard.querySelector('h3').textContent;
-            const productImage = productCard.querySelector('.product-image img').src;
-            const priceText = productName.match(/\$\d+/)[0];
+            if (!productCard) return;
+            
+            const productNameElement = productCard.querySelector('h3');
+            const productImageElement = productCard.querySelector('.product-image img');
+            
+            if (!productNameElement || !productImageElement) return;
+            
+            const productName = productNameElement.textContent;
+            const productImage = productImageElement.src;
+            
+            const priceMatch = productName.match(/\$\d+/);
+            if (!priceMatch) return;
+            
+            const priceText = priceMatch[0];
             
             const product = {
                 id: Date.now().toString(),
@@ -96,16 +172,35 @@ function setupCartButtons() {
             };
             
             addToCart(product);
-            loadCartItems();
+            this.classList.add('added');
+            setTimeout(() => {
+                this.classList.remove('added');
+            }, 1000);
         });
     });
     
     const removeButtons = document.querySelectorAll('.remove-button');
-    removeButtons.forEach((button, index) => {
-        button.addEventListener('click', function() {
-            removeFromCart(index);
-            loadCartItems();
+    if (removeButtons) {
+        removeButtons.forEach((button, index) => {
+            button.addEventListener('click', function() {
+                removeFromCart(index);
+            });
         });
+    }
+}
+
+function setupCarousel() {
+    const leftArrow = document.querySelector('.carousel-arrow.left');
+    const rightArrow = document.querySelector('.carousel-arrow.right');
+    
+    if (!leftArrow || !rightArrow) return;
+    
+    leftArrow.addEventListener('click', function() {
+        console.log('Navigate left in carousel');
+    });
+    
+    rightArrow.addEventListener('click', function() {
+        console.log('Navigate right in carousel');
     });
 }
 
@@ -115,6 +210,11 @@ function addToCart(product) {
     saveCartItems(cart);
     
     alert(`${product.name} is toegevoegd aan je winkelmandje!`);
+    updateCartCount();
+    
+    if (document.querySelector('.cart-container')) {
+        loadCartItems();
+    }
 }
 
 function removeFromCart(index) {
@@ -124,18 +224,48 @@ function removeFromCart(index) {
         saveCartItems(cart);
         
         alert(`${removedItem.name} is verwijderd uit je winkelmandje.`);
+        
+        if (document.querySelector('.cart-container')) {
+            loadCartItems();
+        }
+        updateCartCount();
     }
 }
 
-function setupCarousel() {
-    const leftArrow = document.querySelector('.carousel-arrow.left');
-    const rightArrow = document.querySelector('.carousel-arrow.right');
+function processOrder() {
+    const cartItems = getCartItems();
+    if (cartItems.length === 0) {
+        alert('Je hebt geen producten in je winkelmandje. Voeg eerst producten toe.');
+        return;
+    }
     
-    leftArrow.addEventListener('click', function() {
-        console.log('Navigate left in carousel');
-    });
+    const formData = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        street: document.getElementById('street').value,
+        housenumber: document.getElementById('housenumber').value,
+        addition: document.getElementById('addition').value,
+        postcode: document.getElementById('postcode').value,
+        city: document.getElementById('city').value,
+        payment: document.querySelector('input[name="payment"]:checked').value,
+        products: cartItems
+    };
     
-    rightArrow.addEventListener('click', function() {
-        console.log('Navigate right in carousel');
+    console.log('Order submitted:', formData);
+    alert('Bedankt voor je bestelling! Je ontvangt spoedig een bevestiging per e-mail.');
+    
+    localStorage.removeItem('leafloomCart');
+    updateCartCount();
+}
+
+function updateCartCount() {
+    const cartItems = getCartItems();
+    const cartCountElements = document.querySelectorAll('.cart-count');
+    
+    cartCountElements.forEach(element => {
+        if (element) {
+            element.textContent = cartItems.length;
+            element.style.display = cartItems.length > 0 ? 'block' : 'none';
+        }
     });
 }
